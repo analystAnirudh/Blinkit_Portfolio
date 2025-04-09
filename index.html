@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blinkit Operations Dashboard | Data Visualization Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #146EB4; /* Original blue */
+            --secondary-color: #232F3E; /* Original navy */
+            --background-color: #f2f3f3; /* Light gray background */
+            --text-color: #003068; /* Dark text */
+            --accent-color: #FF9900; /* Original orange */
+            --success-color: #00A65A; /* Green for positive metrics */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Blinkit Logo Placement - Top Right Corner */
+        .blinkit-logo-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+
+        .blinkit-logo {
+            height: 60px;
+            width: auto;
+            opacity: 1;
+            transition: all 0.3s ease;
+        }
+
+        .blinkit-logo:hover {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        /* Header Section */
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 4px solid var(--accent-color);
+            position: relative;
+        }
+
+        .header-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        /* Profile Section */
+        .profile {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-top: 20px;
+            color: var(--primary-color);
+        }
+
+        .profile-title {
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .profile-description {
+            max-width: 700px;
+            margin: 0 auto;
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        /* Dashboard Section */
+        .dashboard-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 40px;
+            border: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        .dashboard-iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-toggle:hover {
+            background-color: #0d5a9e;
+            transform: translateY(-2px);
+        }
+
+        .dashboard-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+        .dashboard-container.fullscreen .dashboard-iframe {
+            height: 100%;
+        }
+
+        /* Key Metrics Section */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            border-top: 4px solid var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            transition: all 0.5s ease;
+        }
+
+        .metric-card:hover .metric-icon {
+            transform: rotate(10deg) scale(1.1);
+            color: var(--accent-color);
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .metric-text-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .highlight {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        /* Sections */
+        .section {
+            background-color: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .section-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.3s ease;
+        }
+
+        .section-header:hover {
+            background-color: #f0f0f0;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .section-toggle {
+            color: var(--accent-color);
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 20px;
+        }
+
+        .section-content.active {
+            max-height: 1000px;
+            padding: 20px;
+        }
+
+        .section-content p {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        .section-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .section-content li {
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .insight-box {
+            background-color: #f7f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .insight-box:hover {
+            transform: translateX(5px);
+        }
+
+        .insight-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        /* Download Button */
+        .download-button {
+            display: block;
+            margin: 40px auto 0;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: #fff;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .download-button:hover {
+            background-color: #0d5a9e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .download-button i {
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .download-button:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+            margin-top: 30px;
+        }
+
+        .skill-card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(154, 154, 154, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(137, 137, 137, 0.2);
+        }
+
+        .skill-card .icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            transition: all 0.5s ease;
+        }
+
+        .skill-card:hover .icon {
+            transform: rotate(15deg) scale(1.2);
+            color: var(--accent-color);
+        }
+
+        .skill-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .skill-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .social-links a {
+            text-decoration: none;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .linkedin { background-color: #0077B5; }
+        .github { background-color: #333; }
+        .gmail { background-color: #D14836; }
+        .social-links i {
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .profile-name {
+                font-size: 1.8rem;
+            }
+            
+            .dashboard-iframe {
+                height: 400px;
+            }
+            
+            .metrics-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .blinkit-logo-container {
+                top: 10px;
+                right: 10px;
+            }
+
+            .blinkit-logo {
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-name {
+                font-size: 1.6rem;
+            }
+            
+            .header-title {
+                font-size: 1.8rem;
+            }
+
+            .metric-value {
+                font-size: 1.5rem;
+            }
+
+            .metric-text-value {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Footer */
+        footer {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: #444;
+            text-align: center;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 60px;
+            box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        footer p {
+            margin: 6px 0;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: var(--text-color);
+        }
+
+        .footer-name {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .footer-copyright {
+            margin: 4px 0;
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        /* Projects Showcase System */
+        .projects-master-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .master-toggle {
+            background-color: white;
+            color: #131A22;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .master-toggle:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .master-toggle i {
+            margin-left: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .master-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        /* Google Project Container */
+        .google-project-container {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 300px;
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: -1;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .google-project-container.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            z-index: 1;
+        }
+
+        .google-project-header {
+            background-color: #4285F4; /* Google blue */
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .google-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+
+        .google-project-title {
+            font-weight: 600;
+            color: white;
+        }
+
+        .google-project-content {
+            padding: 15px;
+        }
+
+        .google-project-description {
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .google-project-link {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .google-project-link:hover {
+            background-color: #0d5a9e;
+            transform: translateY(-2px);
+        }
+
+        /* Typewriter effect */
+        .typewriter {
+            display: inline-block;
+            position: relative;
+        }
+        
+        .typewriter::after {
+            content: '|';
+            position: absolute;
+            right: -5px;
+            animation: blink 0.7s infinite;
+            color: var(--secondary-color);
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .projects-master-container {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .master-toggle {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .google-project-container {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Blinkit Logo Placement - Top Right Corner -->
+    <div class="blinkit-logo-container">
+        <img src="Blinkit_logo_upscayl.png" alt="Blinkit Logo" class="blinkit-logo">
+    </div>
+
+    <div class="header">
+        <h1 class="header-title">Blinkit Operations Dashboard</h1>
+        <p class="header-subtitle">Data-Driven Insights for Quick Commerce Performance</p>
+    </div>
+
+    <div class="container">
+        <!-- Profile Section -->
+        <div class="profile">
+            <img src="/Anirudh_image.png" alt="Profile Picture" class="profile-image">
+            <h1 class="profile-name">Anirudh Chaudhary</h1>
+            <p class="profile-title">Business Analyst | Data Visualization Specialist</p>
+            <p class="profile-description">
+                This interactive dashboard provides comprehensive insights into Blinkit's quick commerce operations, 
+                analyzing delivery performance, order patterns, and customer behavior metrics. Designed to help 
+                optimize operations and enhance customer experience in the fast-paced quick commerce industry.
+            </p>
+        </div>
+
+        <!-- Key Metrics Section -->
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="metric-label">Total Orders</div>
+                <div class="metric-value" id="total-orders">0</div>
+                <div>Across all service areas</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="metric-label">Avg Delivery Time</div>
+                <div class="metric-value" id="avg-delivery">0</div>
+                <div>Minutes per order</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="metric-label">Active Customers</div>
+                <div class="metric-value" id="customers">0</div>
+                <div>Repeat buyers</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="metric-label">Top Category</div>
+                <div class="metric-text-value" id="top-category">Groceries</div>
+                <div>Highest order volume</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="dashboard-container" id="dashboard-container">
+            <button class="fullscreen-toggle" id="fullscreen-toggle">
+                <i class="fas fa-expand"></i> Fullscreen
+            </button>
+            <iframe 
+                class="dashboard-iframe"
+                title="Blinkit_Operations_Dashboard_AnirudhChaudhary"
+                width="1140"
+                height="541.25"
+                src="https://app.powerbi.com/reportEmbed?reportId=6d32a096-0c61-4ad9-a154-68b966809dd8&autoAuth=true&ctid=a244f90e-beae-4adc-a8cb-4c0c34466fd2"
+                frameborder="0"
+                allowfullscreen="true">
+            </iframe>
+        </div>
+
+        <!-- Dashboard Insights Sections -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Operations Performance Analysis</h2>
+                <div class="section-toggle">+</div>
+            </div>
+            <div class="section-content">
+                <p>The Operations Performance Analysis provides a comprehensive view of delivery metrics across service areas and time periods. Key findings include:</p>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Delivery Efficiency</div>
+                    <p>Deliveries are most efficient in <span class="highlight">urban centers</span> with average delivery times under 10 minutes. Suburban areas show slightly longer delivery times averaging 15-20 minutes during peak hours.</p>
+                </div>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Order Patterns</div>
+                    <p><strong>Evening hours</strong> (5-9 PM) account for 45% of daily orders, with <strong>groceries</strong> being the most frequently ordered category. This suggests opportunities for targeted promotions during these high-traffic periods.</p>
+                </div>
+                
+                <ul>
+                    <li>Consistent order growth observed month-over-month, with 15% increase in repeat customers</li>
+                    <li>Delivery partners maintain an average rating of 4.7/5 across all service areas</li>
+                    <li>Opportunity to optimize delivery routes in suburban areas to match urban efficiency</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Product Category Insights</h2>
+                <div class="section-toggle">+</div>
+            </div>
+            <div class="section-content">
+                <p>Detailed analysis of product category performance reveals strategic opportunities for inventory optimization:</p>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Top Performing Categories</div>
+                    <p><strong>Groceries</strong> and <strong>snacks</strong> show particularly strong performance, accounting for 60% of total orders. The <strong>personal care</strong> category shows growing demand with 25% month-over-month growth.</p>
+                </div>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Inventory Strategy</div>
+                    <p>With average order value of ₹450, there's potential to bundle high-margin items with fast-moving grocery products to increase basket size.</p>
+                </div>
+                
+                <ul>
+                    <li>Essential items show steady demand throughout the day, indicating reliable inventory requirements</li>
+                    <li>Snacks and beverages show peak demand during evening hours, suggesting targeted stocking</li>
+                    <li>Opportunity to expand product range in high-growth categories like personal care</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Geographical Performance</h2>
+                <div class="section-toggle">+</div>
+            </div>
+            <div class="section-content">
+                <p>The geographical analysis highlights key markets and service areas with optimization opportunities:</p>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Top Performing Areas</div>
+                    <p><span class="highlight">Central business districts</span> and <span class="highlight">high-density residential areas</span> emerge as the strongest markets, with highest order frequency and fastest delivery times. These areas should be prioritized for marketing campaigns and inventory placement.</p>
+                </div>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Expansion Opportunities</div>
+                    <p>Suburban areas show consistent demand but may benefit from optimized delivery routes and localized inventory to improve service times. The data suggests potential for "dark store" placement in these areas.</p>
+                </div>
+                
+                <ul>
+                    <li>Delivery data reveals efficient coverage in urban centers with room for optimization in suburban areas</li>
+                    <li>No significant regional preference for specific product categories observed</li>
+                    <li>Potential to optimize dark store locations based on geographical demand patterns</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Customer Behavior</h2>
+                <div class="section-toggle">+</div>
+            </div>
+            <div class="section-content">
+                <p>Analysis of customer metrics reveals patterns and opportunities in user engagement:</p>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Order Patterns</div>
+                    <p>Customers show strong preference for <strong>evening deliveries</strong> (5-9 PM), accounting for 45% of daily orders. The average order frequency is 2.3 times per week for active customers.</p>
+                </div>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Retention Metrics</div>
+                    <p>30-day customer retention rate stands at 65%, with repeat customers having 35% higher average order value than first-time buyers. This highlights the importance of loyalty programs and retention strategies.</p>
+                </div>
+                
+                <ul>
+                    <li>Mobile app users show 20% higher order frequency than web users</li>
+                    <li>Opportunity to implement personalized recommendations based on order history</li>
+                    <li>Potential to optimize push notification timing based on customer order patterns</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Strategic Recommendations</h2>
+                <div class="section-toggle">+</div>
+            </div>
+            <div class="section-content">
+                <p>Based on the comprehensive data analysis, the following strategic actions are recommended:</p>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Operations Strategy</div>
+                    <p>1. Optimize delivery routes in suburban areas to match urban efficiency<br>
+                    2. Implement dynamic delivery pricing during peak hours to manage demand<br>
+                    3. Expand dark store network in high-growth suburban areas</p>
+                </div>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Inventory Strategy</div>
+                    <p>1. Increase stock of high-demand items during peak evening hours<br>
+                    2. Create bundled offers combining groceries with high-margin items<br>
+                    3. Expand personal care category based on growing demand</p>
+                </div>
+                
+                <div class="insight-box">
+                    <div class="insight-title">Customer Engagement</div>
+                    <p>1. Develop loyalty program to increase repeat purchases<br>
+                    2. Optimize push notification timing based on customer order patterns<br>
+                    3. Implement personalized recommendations to increase basket size</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Buttons -->
+        <a href="Blinkit_PowerBI_Dashboard_Anirudhchaudhary.pdf" download="" class="download-button">
+            <i class="fas fa-file-pdf"></i> Download Full Dashboard Report (PDF)
+        </a>
+
+        <!-- Skills Section -->
+        <section id="skills" style="padding: 2rem 0;">
+            <div class="container">
+                <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">Technical Skills Applied</h2>
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <div class="icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Power BI</h3>
+                        <p>Data modeling, DAX measures, and interactive visualizations</p>
+                    </div>
+                    <div class="skill-card">
+                        <div class="icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h3>Data Analysis</h3>
+                        <p>Operational metrics and KPI development</p>
+                    </div>
+                    <div class="skill-card">
+                        <div class="icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h3>Geospatial Analysis</h3>
+                        <p>Delivery area performance mapping</p>
+                    </div>
+                    <div class="skill-card">
+                        <div class="icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Business Strategy</h3>
+                        <p>Data-driven recommendations for growth</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Links -->
+        <div class="social-links">
+            <a href="https://www.linkedin.com/in/anirrudhchaudhry" class="linkedin" target="_blank" title="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="https://github.com/MitsuSarkar/Blinkit-dashboard-power-bi.git" class="github" target="_blank" title="GitHub">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="mailto:anirudhchaudhary.bba2023@imsuc.ac.in" class="gmail" title="Gmail">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Dashboard developed by <span class="footer-name">Anirudh Chaudhary</span></p>
+        <p class="footer-copyright">© 2025 Anirudh Chaudhary. All rights reserved.</p>
+    </footer>
+
+    <!-- Projects Showcase System -->
+    <div class="projects-master-container">
+        <!-- Google Project Container -->
+        <div class="google-project-container" id="googleProjectContainer">
+            <div class="google-project-header">
+                <img src="google_logo.png" alt="Google Logo" class="google-logo">
+                <div class="google-project-title">Google Trends Dashboard</div>
+            </div>
+            <div class="google-project-content">
+                <p class="google-project-description">
+                    An analytical dashboard tracking search trends, regional interest, and related queries 
+                    across various topics and industries using Google Trends data.
+                </p>
+                <a href="#" target="_blank" class="google-project-link">
+                    View Google Trends Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Toggle Button -->
+        <button class="master-toggle" id="masterToggle">
+            <span class="typewriter" id="toggleText">Explore my other Projects</span>
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Accordion functionality
+            const sections = document.querySelectorAll('.section');
+
+            sections.forEach(section => {
+                const header = section.querySelector('.section-header');
+                const content = section.querySelector('.section-content');
+                const toggle = section.querySelector('.section-toggle');
+
+                header.addEventListener('click', () => {
+                    // Close other sections
+                    sections.forEach(otherSection => {
+                        if (otherSection !== section) {
+                            otherSection.querySelector('.section-content').classList.remove('active');
+                            otherSection.querySelector('.section-toggle').textContent = '+';
+                        }
+                    });
+
+                    // Toggle current section
+                    content.classList.toggle('active');
+                    toggle.textContent = content.classList.contains('active') ? '−' : '+';
+                });
+            });
+
+            // Fullscreen toggle functionality
+            const dashboardContainer = document.getElementById('dashboard-container');
+            const fullscreenToggle = document.getElementById('fullscreen-toggle');
+            
+            fullscreenToggle.addEventListener('click', () => {
+                dashboardContainer.classList.toggle('fullscreen');
+                
+                if (dashboardContainer.classList.contains('fullscreen')) {
+                    fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i> Exit Fullscreen';
+                } else {
+                    fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+                }
+            });
+
+            // Improved number counting animation with easing and repeating
+            function animateValue(id, start, end, duration, isCurrency = false, isDecimal = false) {
+                const obj = document.getElementById(id);
+                let startTimestamp = null;
+                
+                // Easing function for smooth animation
+                const easeOutQuad = (t) => t * (2 - t);
+                
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const easedProgress = easeOutQuad(progress);
+                    
+                    let value;
+                    if (isDecimal) {
+                        value = (easedProgress * (end - start) + start).toFixed(2);
+                    } else {
+                        value = Math.floor(easedProgress * (end - start) + start);
+                    }
+                    
+                    if (isCurrency) {
+                        obj.innerHTML = '₹' + value;
+                    } else {
+                        obj.innerHTML = value;
+                    }
+                    
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            // Text typing animation for "Groceries"
+            function typeWriter(element, text, speed) {
+                let i = 0;
+                element.innerHTML = ''; // Clear before typing
+                function typing() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typing, speed);
+                    }
+                }
+                typing();
+            }
+
+            // Function to run all animations
+            function runAllAnimations() {
+                // Animate numbers with smoother easing
+                animateValue('total-orders', 0, 1250, 1500);
+                animateValue('avg-delivery', 0, 12.5, 1200, false, true);
+                animateValue('customers', 0, 850, 800);
+                
+                // Animate text
+                const topCategoryElement = document.getElementById('top-category');
+                typeWriter(topCategoryElement, 'Groceries', 100);
+            }
+
+            // Start animations when metrics come into view
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Run animations immediately
+                        runAllAnimations();
+                        
+                        // Set up repeating every 3 seconds
+                        const repeatInterval = setInterval(runAllAnimations, 6000);
+                        
+                        // Stop observing after first animation
+                        observer.unobserve(entry.target);
+                        
+                        // Clean up interval when element leaves view
+                        const leaveObserver = new IntersectionObserver((leaveEntries) => {
+                            leaveEntries.forEach(leaveEntry => {
+                                if (!leaveEntry.isIntersecting) {
+                                    clearInterval(repeatInterval);
+                                    leaveObserver.unobserve(leaveEntry.target);
+                                }
+                            });
+                        }, { threshold: 0 });
+                        
+                        leaveObserver.observe(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            // Observe the metrics container
+            const metricsContainer = document.querySelector('.metrics-container');
+            observer.observe(metricsContainer);
+
+            // Projects Showcase System
+            const masterToggle = document.getElementById('masterToggle');
+            const googleProjectContainer = document.getElementById('googleProjectContainer');
+            const toggleText = document.getElementById('toggleText');
+            
+            // Toggle project container
+            masterToggle.addEventListener('click', () => {
+                masterToggle.classList.toggle('active');
+                googleProjectContainer.classList.toggle('visible');
+            });
+            // Typewriter effect for toggle text - UPDATED VERSION
+            const toggleTexts = [
+                "Explore My Other Projects",
+                "Check Out My Work",
+                "View More Dashboards"
+            ];
+            let currentToggleIndex = 0;
+
+            function typeWriterWithCallback(element, text, speed, callback) {
+                let i = 0;
+                element.innerHTML = '';
+                
+                function typing() {
+                    if (i < text.length) {
+                        element.innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(typing, speed);
+                    } else if (callback) {
+                        setTimeout(callback, 1000); // Wait 1 second before deleting
+                    }
+                }
+                
+                typing();
+            }
+
+            function deleteText(element, speed, callback) {
+                let text = element.innerHTML;
+                let length = text.length;
+                
+                function deleting() {
+                    if (length > 0) {
+                        element.innerHTML = text.substring(0, length - 1);
+                        length--;
+                        setTimeout(deleting, speed);
+                    } else if (callback) {
+                        callback();
+                    }
+                }
+                
+                deleting();
+            }
+
+            function animateToggleText() {
+                typeWriterWithCallback(toggleText, toggleTexts[currentToggleIndex], 50, () => {
+                    // After typing completes, wait then delete
+                    setTimeout(() => {
+                        deleteText(toggleText, 30, () => {
+                            // After deleting completes, move to next text
+                            currentToggleIndex = (currentToggleIndex + 1) % toggleTexts.length;
+                            setTimeout(animateToggleText, 500); // Short pause before next cycle
+                        });
+                    }, 1000); // Show completed text for 1 second before deleting
+                });
+            }
+
+            // Start animation
+            animateToggleText();
+            
+            // Initial animation on page load
+            setTimeout(() => {
+                masterToggle.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    masterToggle.style.transform = 'scale(1)';
+                }, 300);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
